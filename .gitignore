@@ -1,0 +1,31 @@
+# Proprietary Binaries & Addons (Local build assets only)
+Assets/
+Reshade/
+*.dll
+*.addon64
+*.exe
+
+# Python build & bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# PyInstaller / Packaging
+dist/
+build/
+*.spec
+*.zip
+
+# Test files & temporary environments
+test_env/
+test_game_dir/
+test_clean_run/
+test_onefile_run/
+*.bak
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
