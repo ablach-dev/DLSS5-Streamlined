@@ -64,3 +64,18 @@ To compile the standalone setup wizard executable:
 build_setup_installer.bat
 ```
 Output will be located at `dist\DLSS5_Setup.exe`.
+
+---
+
+## Legal Disclaimer & Trademarks
+
+- **Non-Commercial Community Tool**: This utility is an independent, non-commercial open-source automation tool designed to assist users with local mod deployment, file management, and configuration. It is distributed strictly free of charge.
+- **Trademarks & Intellectual Property**:
+  - **NVIDIA, GeForce, DLSS, and NVNGX** are trademarks or registered trademarks of **NVIDIA Corporation**.
+  - **ReShade** and the ReShade Addon runtime are copyrighted by **crosire**.
+  - **RenoDX** is developed and copyrighted by the **RenoDX Team and contributors**.
+  - All other trademarks, product names, and company logos mentioned herein are the property of their respective owners.
+- **No Affiliation or Endorsement**: This project is an unofficial community project and is not affiliated with, endorsed by, sponsored by, or supported by NVIDIA Corporation, Microsoft Corporation, or any of their subsidiaries.
+- **Component Packaging & Interoperability**: Runtime components managed by this tool are utilized solely to enable interoperability, runtime enhancement, and configuration for supported applications. No claim of ownership or copyright is made over third-party proprietary binaries.
+- **Takedown & Copyright Inquiries**: If you are a copyright owner or authorized representative and have any concerns or removal requests regarding any referenced runtime assets, please open an issue on the [GitHub Issues](https://github.com/ablach-dev/DLSS5-Streamlined/issues) tracker for immediate review and prompt resolution.
+
