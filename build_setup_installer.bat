@@ -5,13 +5,13 @@ cd /d "%~dp0"
 echo ===================================================
 echo  Step 1: Building App Binary (DLSS5_Installer.exe)
 echo ===================================================
-pyinstaller --noconfirm --onefile --windowed --name "DLSS5_Installer" --collect-all customtkinter dlss5_installer.py
+pyinstaller --noconfirm --onefile --windowed --icon=icon.ico --name "DLSS5_Installer" --add-data "icon.ico;." --collect-all customtkinter dlss5_installer.py
 
 echo.
 echo ===================================================
 echo  Step 2: Building Setup Wizard (DLSS5_Setup.exe)
 echo ===================================================
-pyinstaller --noconfirm --onefile --windowed --name "DLSS5_Setup" --add-data "dist\DLSS5_Installer.exe;." --add-data "Assets;Assets" --collect-all customtkinter installer_setup.py
+pyinstaller --noconfirm --onefile --windowed --icon=icon.ico --name "DLSS5_Setup" --add-data "dist\DLSS5_Installer.exe;." --add-data "Assets;Assets" --add-data "icon.ico;." --collect-all customtkinter installer_setup.py
 
 echo.
 echo ===================================================

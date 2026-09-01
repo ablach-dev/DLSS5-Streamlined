@@ -49,19 +49,21 @@ EnableProxyLibrary=0
 ProxyLibrary=
 """
 
-def get_local_assets_dir() -> Optional[Path]:
+def get_base_dir() -> Path:
     if getattr(sys, "frozen", False):
         if hasattr(sys, "_MEIPASS"):
-            meipass = Path(sys._MEIPASS) / "Assets"
-            if meipass.exists():
-                return meipass
-        exe_assets = Path(sys.executable).parent / "Assets"
-        if exe_assets.exists():
-            return exe_assets
-    else:
-        script_assets = Path(__file__).resolve().parent / "Assets"
-        if script_assets.exists():
-            return script_assets
+            return Path(sys._MEIPASS)
+        return Path(sys.executable).parent
+    return Path(__file__).resolve().parent
+
+def get_local_assets_dir() -> Optional[Path]:
+    base = get_base_dir()
+    if (base / "Assets").exists():
+        return base / "Assets"
+    if getattr(sys, "frozen", False):
+        exe_dir = Path(sys.executable).parent / "Assets"
+        if exe_dir.exists():
+            return exe_dir
     return None
 
 class InstallerEngine:
@@ -71,7 +73,6 @@ class InstallerEngine:
         log: Callable[[str, str], None],
         progress_cb: Optional[Callable[[float], None]] = None
     ) -> Optional[Path]:
-        """Locates asset locally or downloads it from GitHub release into local cache."""
         local_dir = get_local_assets_dir()
         if local_dir:
             local_file = local_dir / filename
@@ -88,10 +89,7 @@ class InstallerEngine:
         temp_file = CACHE_DIR / f"{filename}.part"
 
         try:
-            req = urllib.request.Request(
-                url,
-                headers={"User-Agent": "DLSS5-Installer/1.0"}
-            )
+            req = urllib.request.Request(url, headers={"User-Agent": "DLSS5-Installer/1.0"})
             with urllib.request.urlopen(req, timeout=30) as resp, open(temp_file, "wb") as f:
                 total_size = int(resp.headers.get("Content-Length", 0))
                 downloaded = 0
@@ -150,7 +148,6 @@ class InstallerEngine:
         log(f"Target Executable: {game_exe.name}", "info")
         log(f"Target Directory: {game_dir}", "info")
 
-        # Required files list
         required_assets = list(CORE_ASSETS)
         if is_dx11:
             required_assets.append(DX11_ASSET)
@@ -164,7 +161,6 @@ class InstallerEngine:
                 except Exception:
                     pass
 
-        # Ensure all assets are ready
         resolved_files: Dict[str, Path] = {}
         for idx, filename in enumerate(required_assets):
             log(f"Verifying asset ({idx+1}/{len(required_assets)}): {filename}...", "info")
@@ -181,7 +177,6 @@ class InstallerEngine:
         set_progress(0.6)
         log("Deploying DLSS 5 and ReShade runtime to game directory...", "info")
 
-        # Copy to game folder
         for idx, (filename, src_path) in enumerate(resolved_files.items()):
             dst_path = game_dir / filename
 
@@ -206,7 +201,6 @@ class InstallerEngine:
 
             set_progress(0.6 + 0.35 * ((idx + 1) / len(resolved_files)))
 
-        # Initialize ReShade.ini
         target_ini = game_dir / "ReShade.ini"
         if not target_ini.exists():
             try:
@@ -294,6 +288,14 @@ def launch_gui():
             self.minsize(580, 560)
             self.configure(fg_color=BG_COLOR)
 
+            # Set icon
+            ico = get_base_dir() / "icon.ico"
+            if ico.exists():
+                try:
+                    self.iconbitmap(str(ico))
+                except Exception:
+                    pass
+
             self.ui_queue = queue.Queue()
             self.is_busy = False
 
@@ -309,13 +311,12 @@ def launch_gui():
             self.geometry(f"{width}x{height}+{x}+{y}")
 
         def _init_ui(self):
-            # Header
             header = ctk.CTkFrame(self, fg_color="transparent")
             header.pack(fill="x", padx=24, pady=(20, 14))
 
             title = ctk.CTkLabel(
                 header,
-                text="DLSS 5 Installer",
+                text="⚡ DLSS 5 Installer",
                 font=ctk.CTkFont(family="Segoe UI", size=20, weight="bold"),
                 text_color=TEXT_COLOR
             )
@@ -329,7 +330,6 @@ def launch_gui():
             )
             subtitle.pack(anchor="w", pady=(2, 0))
 
-            # Target Executable Card
             card = ctk.CTkFrame(self, fg_color=PANEL_BG, corner_radius=10, border_width=1, border_color=PANEL_BORDER)
             card.pack(fill="x", padx=24, pady=(0, 12))
 
@@ -380,7 +380,6 @@ def launch_gui():
             )
             self.folder_preview.pack(fill="x", pady=(6, 0))
 
-            # Options Card
             opts_card = ctk.CTkFrame(self, fg_color=PANEL_BG, corner_radius=10, border_width=1, border_color=PANEL_BORDER)
             opts_card.pack(fill="x", padx=24, pady=(0, 14))
 
@@ -413,7 +412,6 @@ def launch_gui():
             self.backup_check.select()
             self.backup_check.pack(anchor="w")
 
-            # Actions
             btn_row = ctk.CTkFrame(self, fg_color="transparent")
             btn_row.pack(fill="x", padx=24, pady=(0, 10))
 
@@ -442,12 +440,10 @@ def launch_gui():
             )
             self.uninstall_btn.pack(side="right")
 
-            # Progress Bar
             self.progress_bar = ctk.CTkProgressBar(self, height=4, progress_color=ACCENT_COLOR, fg_color="#1E232E")
             self.progress_bar.set(0)
             self.progress_bar.pack(fill="x", padx=24, pady=(0, 8))
 
-            # Status Log
             log_frame = ctk.CTkFrame(self, fg_color=PANEL_BG, corner_radius=10, border_width=1, border_color=PANEL_BORDER)
             log_frame.pack(fill="both", expand=True, padx=24, pady=(0, 20))
 
@@ -577,11 +573,18 @@ def launch_fallback_tkinter_gui():
     root.geometry("600x540")
     root.configure(bg="#0F1117")
 
+    ico = get_base_dir() / "icon.ico"
+    if ico.exists():
+        try:
+            root.iconbitmap(str(ico))
+        except Exception:
+            pass
+
     exe_var = tk.StringVar()
     dx11_var = tk.BooleanVar(value=False)
     backup_var = tk.BooleanVar(value=True)
 
-    header = tk.Label(root, text="DLSS 5 Installer", font=("Segoe UI", 16, "bold"), fg="#F1F5F9", bg="#0F1117")
+    header = tk.Label(root, text="⚡ DLSS 5 Installer", font=("Segoe UI", 16, "bold"), fg="#F1F5F9", bg="#0F1117")
     header.pack(anchor="w", padx=20, pady=(16, 2))
 
     subtitle = tk.Label(root, text="Automated deployment of DLSS 5, RenoDX, and ReShade runtime.", font=("Segoe UI", 10), fg="#94A3B8", bg="#0F1117")
