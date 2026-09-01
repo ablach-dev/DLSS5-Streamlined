@@ -1,34 +1,26 @@
-# DLSS 5 One-Click Installer
+# DLSS 5 One-Click Streamlined Installer
 
 An automated utility designed to streamline the installation and deployment of **DLSS 5**, **RenoDX**, and **ReShade Addon** runtime into target game directories.
 
 ---
 
-## Overview
-
-The DLSS 5 One-Click Installer automates what is normally a multi-step manual process:
-1. Deploying the official ReShade 6.8.0 Addon runtime (`dxgi.dll`) and initial configuration.
-2. Deploying core DLSS 5 runtime libraries and RenoDX addons directly to the game executable's folder.
-3. Conditionally injecting the DirectX 11 bridge addon for DX11 titles.
-4. Preserving original game files via automatic `.bak` backups.
-
----
-
 ## Quick Start
 
-### For End Users (Single-File Standalone App)
+### Windows Setup Wizard (Recommended)
 
-1. Download **`DLSS5_Installer.exe`** directly from the [**Releases**](https://github.com/ablach-dev/DLSS5-Streamlined/releases) tab.
-2. Open `DLSS5_Installer.exe`.
-3. Click **Browse** and select your game's primary executable (`.exe`).
-4. If the game runs on DirectX 11, toggle the **DirectX 11 Game** switch ON.
-5. Click **Install DLSS 5**.
+1. Download **`DLSS5_Setup.exe`** from the [**Releases**](https://github.com/ablach-dev/DLSS5-Streamlined/releases) tab.
+2. Run `DLSS5_Setup.exe`.
+3. Choose your desired destination folder (defaults to `%LOCALAPPDATA%\Programs\DLSS5_Installer`).
+4. Click **Install**. The setup wizard will unpack the application and create a **Desktop shortcut**.
+5. Launch **DLSS 5 Installer** from your Desktop:
+   - Click **Browse** and select your game's main executable (`.exe`).
+   - If the game uses DirectX 11, toggle the **DirectX 11 Game** switch ON.
+   - Click **Install DLSS 5**.
 
-### Running from Source / Repository
+### Uninstallation
 
-1. Clone or download this repository.
-2. Double-click `Launch_Installer.bat` (or run `python dlss5_installer.py`).
-3. Select your game's executable (`.exe`), configure options, and click **Install DLSS 5**.
+* **From Windows Settings**: Go to **Windows Settings > Apps > Installed apps** (or Add/Remove Programs) and click **Uninstall** on **DLSS 5 Installer**.
+* **From Install Directory**: Run `uninstall.bat` inside the installation folder.
 
 ---
 
@@ -58,24 +50,17 @@ DLSS5_Installer.exe "C:\Games\The Witcher 3\bin\x64\witcher3.exe" --dx11
 # Disable automatic backups
 DLSS5_Installer.exe "C:\Games\Cyberpunk 2077\bin\x64\Cyberpunk2077.exe" --no-backup
 
-# Uninstall and restore backups
+# Uninstall from game directory and restore original backups
 DLSS5_Installer.exe "C:\Games\Cyberpunk 2077\bin\x64\Cyberpunk2077.exe" --uninstall
 ```
-
-### CLI Arguments
-
-* `exe`: Absolute or relative path to the target game executable.
-* `--dx11`: Deploys the `dlss5-dx11-bridge.addon64` component for DirectX 11 titles.
-* `--no-backup`: Skips creating `.bak` files when replacing existing libraries.
-* `--uninstall`: Removes deployed DLLs/addons and restores any existing `.bak` backups.
 
 ---
 
 ## Building from Source
 
-To compile the single-file standalone executable yourself:
+To compile the standalone setup wizard executable:
 
 ```cmd
-build_standalone_exe.bat
+build_setup_installer.bat
 ```
-Output will be located at `dist\DLSS5_Installer.exe`.
+Output will be located at `dist\DLSS5_Setup.exe`.
